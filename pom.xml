@@ -7,8 +7,11 @@
   <packaging>pom</packaging>
   <name>Modilius - Micro AI</name>
   <url>https://github.com/Modilius/micro-ai</url>
+    <modules>
+        <module>micro-ai-cdi-buildcompatible-extension</module>
+    </modules>
 
-  <properties>
+    <properties>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
