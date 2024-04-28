@@ -1,0 +1,9 @@
+= micro-ai
+Langchain4j MicroProfile integration 
+
+init of the project.
+
+Thanks to Jean François James, we have integrated its example of use Langchain4j with Helidon-MP. We are going to update it to use the cdi extension
+
+https://github.com/jefrajames/helidon-car-booking/tree/main
+
