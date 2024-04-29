@@ -9,9 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(WeldJunit5Extension.class)
-public class DetectAIServiceInterfacesTest {
+public class ExtensionTest {
     @Inject
     DummyBean dummyBean;
+
+    @Inject
+    MyDummyAIService myDummyAIService;
 
     @WeldSetup
     public WeldInitiator weld = WeldInitiator.from(
@@ -21,6 +24,7 @@ public class DetectAIServiceInterfacesTest {
 
     @Test
     void detectAIServiceInterface() {
+        Assertions.assertNotNull(myDummyAIService);
         Assertions.assertTrue(
                 MicroAICDIBuildCompatibleExtension
                         .getDetectedAIServicesDeclaredInterfaces()

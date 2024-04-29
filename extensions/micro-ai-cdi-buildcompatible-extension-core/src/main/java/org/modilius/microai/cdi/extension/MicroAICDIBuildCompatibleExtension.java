@@ -7,16 +7,18 @@ import jakarta.enterprise.inject.build.compatible.spi.Messages;
 import jakarta.enterprise.inject.build.compatible.spi.MetaAnnotations;
 import jakarta.enterprise.inject.build.compatible.spi.ScannedClasses;
 import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
 import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
 import jakarta.enterprise.inject.build.compatible.spi.Types;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import org.jboss.logging.Logger;
+import org.modilius.microai.cdi.extension.spi.AIServiceCreator;
 import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MicroAICDIBuildCompatibleExtension  implements BuildCompatibleExtension {
+public class MicroAICDIBuildCompatibleExtension implements BuildCompatibleExtension {
     private static final Logger LOGGER = Logger.getLogger(MicroAICDIBuildCompatibleExtension.class);
     private static List<String> detectedAIServicesDeclaredInterfaces = new ArrayList<>();
 
@@ -30,17 +32,26 @@ public class MicroAICDIBuildCompatibleExtension  implements BuildCompatibleExten
         //scannedClasses.add(IgniteInstanceProducer.class.getName());
     }
 
-    @Enhancement(types = Object.class, withAnnotations = RegisterAIService.class,withSubtypes = true)
+    @Enhancement(types = Object.class, withAnnotations = RegisterAIService.class, withSubtypes = true)
     public void detectRegisterAIService(ClassInfo classInfo) {
-        LOGGER.info("Detect new AIService "+classInfo.name());
+        LOGGER.info("Detect new AIService " + classInfo.name());
         detectedAIServicesDeclaredInterfaces.add(classInfo.name());
     }
 
 
     @Synthesis
-    public void synthesis(SyntheticComponents syntheticComponents, Types types, Messages messages) {
+    public void synthesis(SyntheticComponents syntheticComponents, Types types, Messages messages) throws ClassNotFoundException {
         //syntheticComponents.addBean(RegisterAIService.class)
+        for (String interfaceName : detectedAIServicesDeclaredInterfaces) {
+            LOGGER.info("Create synthetic " + interfaceName);
+            Class<?> interfaceClass = Class.forName(interfaceName);
+            SyntheticBeanBuilder builder = syntheticComponents.addBean(interfaceClass);
+            builder = builder.createWith(AIServiceCreator.class);
+            builder = builder.type(interfaceClass);
+            builder = builder.withParam("interfaceClass", interfaceClass);
 
+
+        }
     }
 
 }
