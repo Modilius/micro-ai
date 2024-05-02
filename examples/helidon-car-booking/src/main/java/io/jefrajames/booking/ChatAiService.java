@@ -1,5 +1,6 @@
 package io.jefrajames.booking;
 
+import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.service.SystemMessage;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
@@ -9,7 +10,8 @@ import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 import java.time.temporal.ChronoUnit;
 
 @RegisterAIService(
-        tools = BookingService.class
+        tools = BookingService.class,
+        model = AzureOpenAiChatModel.class
 
 )
 public interface ChatAiService {

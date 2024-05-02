@@ -13,6 +13,7 @@ public class AIServiceCreator implements SyntheticBeanCreator<Object> {
         try {
             return AiServices.builder(interfaceClass)
                     .chatLanguageModel(annotation.model().getConstructor().newInstance())
+                    .tools((Object[]) annotation.tools())
                     .build();
         } catch (Exception e) {
             throw new RuntimeException(e);
