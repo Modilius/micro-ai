@@ -2,6 +2,7 @@ package org.modilius.microai.cdi.extension;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import org.jboss.weld.junit5.WeldInitiator;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.concurrent.Callable;
 
 @ExtendWith(WeldJunit5Extension.class)
 public class ExtensionTest {
@@ -23,12 +26,16 @@ public class ExtensionTest {
     MyDummyApplicationScopedAIService myDummyApplicationScopedAIService;
 
     @Inject
+    RequestContextCaller requestContextCaller;
+
+    @Inject
     BeanManager beanManager;
 
     @WeldSetup
     public WeldInitiator weld = WeldInitiator.from(
             MyDummyAIService.class,
-            MyDummyApplicationScopedAIService.class
+            MyDummyApplicationScopedAIService.class,
+            RequestContextCaller.class
     ).build();
 
     @Test
@@ -51,6 +58,23 @@ public class ExtensionTest {
         Assertions.assertNotNull(myDummyApplicationScopedAIService);
         assertBeanScope(MyDummyAIService.class, RequestScoped.class);
         assertBeanScope(MyDummyApplicationScopedAIService.class, ApplicationScoped.class);
+    }
+
+    @Test
+    void callEffectiveCreation() {
+        Assertions.assertNotNull(requestContextCaller.run(()->myDummyAIService.toString()));
+
+    }
+
+    @ActivateRequestContext
+    public static class RequestContextCaller {
+        public <T> T run(Callable<T> callable)  {
+            try {
+                return callable.call();
+            } catch (Exception e) {
+                throw new UndeclaredThrowableException(e);
+            }
+        }
     }
 
     private void assertBeanScope(Class<?> beanType, Class<?> scopedClass) {
