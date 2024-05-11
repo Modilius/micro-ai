@@ -5,6 +5,7 @@ import dev.langchain4j.data.message.ChatMessage;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.output.Response;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.Stereotype;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -16,6 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Retention(RUNTIME)
 @Target(ElementType.TYPE)
+@Stereotype
 public @interface RegisterAIService {
 
     Class<? extends Annotation> scope() default RequestScoped.class;
@@ -23,6 +25,7 @@ public @interface RegisterAIService {
 
     Class<? extends ChatLanguageModel> model() default  DetectChatLanguageModel.class;
 
+    int chatMemoryMaxMessages() default 10;
 
     class DetectChatLanguageModel implements ChatLanguageModel {
         @Override

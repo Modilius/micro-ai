@@ -1,5 +1,6 @@
 package org.modilius.microai.cdi.extension;
 
+import io.smallrye.config.inject.ConfigExtension;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
@@ -33,10 +34,13 @@ public class ExtensionTest {
 
     @WeldSetup
     public WeldInitiator weld = WeldInitiator.from(
-            MyDummyAIService.class,
-            MyDummyApplicationScopedAIService.class,
-            RequestContextCaller.class
-    ).build();
+                    MyDummyAIService.class,
+                    MyDummyApplicationScopedAIService.class,
+                    RequestContextCaller.class,
+                    DummyChatLanguageModel.class,
+                    ConfigExtension.class
+            )
+            .build();
 
     @Test
     void detectAIServiceInterface() {
@@ -62,13 +66,13 @@ public class ExtensionTest {
 
     @Test
     void callEffectiveCreation() {
-        Assertions.assertNotNull(requestContextCaller.run(()->myDummyAIService.toString()));
+        Assertions.assertNotNull(requestContextCaller.run(() -> myDummyAIService.toString()));
 
     }
 
     @ActivateRequestContext
     public static class RequestContextCaller {
-        public <T> T run(Callable<T> callable)  {
+        public <T> T run(Callable<T> callable) {
             try {
                 return callable.call();
             } catch (Exception e) {
