@@ -1,14 +1,22 @@
 package io.jefrajames.booking;
 
-import java.time.temporal.ChronoUnit;
-
+import dev.langchain4j.model.azure.AzureOpenAiChatModel;
 import dev.langchain4j.service.SystemMessage;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
+import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
+import java.time.temporal.ChronoUnit;
+
+
+@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
+@RegisterAIService(
+        model = AzureOpenAiChatModel.class,
+        chatMemoryMaxMessages = 5
+)
 public interface FraudAiService {
 
         @SystemMessage("""

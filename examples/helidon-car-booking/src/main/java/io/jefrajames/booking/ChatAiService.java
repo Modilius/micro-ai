@@ -9,10 +9,11 @@ import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.time.temporal.ChronoUnit;
 
+@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @RegisterAIService(
         tools = BookingService.class,
-        model = AzureOpenAiChatModel.class
-
+        model = AzureOpenAiChatModel.class,
+        chatMemoryMaxMessages = 10
 )
 public interface ChatAiService {
 
