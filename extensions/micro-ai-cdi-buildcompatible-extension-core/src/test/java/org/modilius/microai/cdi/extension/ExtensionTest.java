@@ -1,6 +1,5 @@
 package org.modilius.microai.cdi.extension;
 
-import io.smallrye.config.inject.ConfigExtension;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
@@ -33,6 +32,12 @@ public class ExtensionTest {
     BeanManager beanManager;
 
     @WeldSetup
+    public WeldInitiator weld =
+            WeldInitiator.from( WeldInitiator.createWeld().enableDiscovery().addBeanClasses(RequestContextCaller.class)).build();
+
+
+/*
+    @WeldSetup
     public WeldInitiator weld = WeldInitiator.from(
                     MyDummyAIService.class,
                     MyDummyApplicationScopedAIService.class,
@@ -41,6 +46,7 @@ public class ExtensionTest {
                     ConfigExtension.class
             )
             .build();
+*/
 
     @Test
     void detectAIServiceInterface() {

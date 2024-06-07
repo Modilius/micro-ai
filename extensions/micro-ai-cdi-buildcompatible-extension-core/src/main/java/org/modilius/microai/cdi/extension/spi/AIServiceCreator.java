@@ -10,22 +10,27 @@ import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanCreator;
 import jakarta.enterprise.inject.spi.CDI;
 import org.modilius.microai.cdi.extension.MicroAICDIBuildCompatibleExtension;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class AIServiceCreator implements SyntheticBeanCreator<Object> {
     @Override
     public Object create(Instance<Object> lookup, Parameters params) {
         Class<?> interfaceClass = params.get(MicroAICDIBuildCompatibleExtension.PARAM_INTERFACE_CLASS, Class.class);
         RegisterAIService annotation = interfaceClass.getAnnotation(RegisterAIService.class);
 
-        Class<? extends ChatLanguageModel> chatLanguageModelClass = annotation.model();
-        ChatLanguageModel chatLanguageModel = CDI.current().select(chatLanguageModelClass).get();
+        CDI<Object> cdi = CDI.current();
+        ChatLanguageModel chatLanguageModel = cdi.select(ChatLanguageModel.class).get();
 
         try {
             AiServices<?> aiServices = AiServices.builder(interfaceClass)
                     .chatLanguageModel(chatLanguageModel)
-                    .tools((Object[]) annotation.tools())
+                    .tools(Stream.of(annotation.tools())
+                            .map(c->cdi.select(c).get())
+                            .collect(Collectors.toList()))
                     .chatMemory(MessageWindowChatMemory.withMaxMessages(annotation.chatMemoryMaxMessages()));
 
-            Instance<ContentRetriever> contentRetrievers = CDI.current().select(ContentRetriever.class);
+            Instance<ContentRetriever> contentRetrievers = cdi.select(ContentRetriever.class);
             if (contentRetrievers.isResolvable())
                 aiServices.contentRetriever(contentRetrievers.get());
 

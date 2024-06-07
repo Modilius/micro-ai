@@ -5,10 +5,7 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
-
-@RegisterAIService(
-        model = DummyChatLanguageModel.class
-)
+@RegisterAIService
 public interface MyDummyAIService  {
     @SystemMessage("toto")
     @UserMessage("titi")

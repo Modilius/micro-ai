@@ -16,6 +16,48 @@
            <version>3.8.1</version>
            <scope>test</scope>
        </dependency>
+       <dependency>
+           <groupId>io.smallrye</groupId>
+           <artifactId>jandex</artifactId>
+           <version>3.2.0</version>
+       </dependency>
    </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/jandex.idx</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.smallrye</groupId>
+                <artifactId>jandex-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>make-index-test</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>jandex</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.outputDirectory}</directory>
+                                </fileSet>
+                                <fileSet>
+                                    <directory>${project.build.testOutputDirectory}</directory>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
