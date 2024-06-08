@@ -33,20 +33,12 @@ public class ExtensionTest {
 
     @WeldSetup
     public WeldInitiator weld =
-            WeldInitiator.from( WeldInitiator.createWeld().enableDiscovery().addBeanClasses(RequestContextCaller.class)).build();
-
-
-/*
-    @WeldSetup
-    public WeldInitiator weld = WeldInitiator.from(
-                    MyDummyAIService.class,
-                    MyDummyApplicationScopedAIService.class,
-                    RequestContextCaller.class,
-                    DummyChatLanguageModel.class,
-                    ConfigExtension.class
-            )
-            .build();
-*/
+            WeldInitiator.from(
+                    WeldInitiator
+                            .createWeld()
+                            .enableDiscovery()
+                            .addBeanClasses(RequestContextCaller.class))
+                    .build();
 
     @Test
     void detectAIServiceInterface() {

@@ -24,6 +24,8 @@ import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -43,23 +45,24 @@ public class MicroAICDIBuildCompatibleExtension implements BuildCompatibleExtens
     @Discovery
     public void discoverRegisterAIServiceAnnotatedServices(ScannedClasses scannedClasses, Messages messages, MetaAnnotations metaAnnotations) throws IOException {
         LOGGER.info("Core ext");
-        InputStream jandexResource = this.getClass().getClassLoader().getResourceAsStream("META-INF/jandex.idx");
-        if (jandexResource != null) {
-            IndexReader indexReader = new IndexReader(jandexResource);
-            Index index = indexReader.read();
+        Enumeration<URL> resources = this.getClass().getClassLoader().getResources("META-INF/jandex.idx");
+        while (resources.hasMoreElements()) {
+            try (InputStream input = resources.nextElement().openStream()) {
+                IndexReader indexReader = new IndexReader(input);
+                Index index = indexReader.read();
 
-            DotName registerAiServiceDotName = DotName.createSimple(RegisterAIService.class);
-            List<AnnotationInstance> annotations = index.getAnnotations(registerAiServiceDotName);
+                DotName registerAiServiceDotName = DotName.createSimple(RegisterAIService.class);
+                List<AnnotationInstance> annotations = index.getAnnotations(registerAiServiceDotName);
 
-            for (AnnotationInstance annotation : annotations) {
-                if (Objects.requireNonNull(annotation.target().kind()) == AnnotationTarget.Kind.CLASS) {
-                    String detectedClass = annotation.target().toString();
-                    messages.info("Detect new AIService " + detectedClass);
-                    scannedClasses.add(detectedClass);
+                for (AnnotationInstance annotation : annotations) {
+                    if (Objects.requireNonNull(annotation.target().kind()) == AnnotationTarget.Kind.CLASS) {
+                        String detectedClass = annotation.target().toString();
+                        messages.info("Detect new AIService " + detectedClass);
+                        scannedClasses.add(detectedClass);
+                    }
                 }
             }
-        } else {
-            messages.error("No jandex.idx found, can't detect @RegisterAIService !");
+
         }
     }
 
