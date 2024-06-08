@@ -1,16 +1,8 @@
 package org.modilius.microai.cdi.extension;
 
-import jakarta.enterprise.inject.build.compatible.spi.BeanInfo;
-import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
-import jakarta.enterprise.inject.build.compatible.spi.Discovery;
-import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
-import jakarta.enterprise.inject.build.compatible.spi.Messages;
-import jakarta.enterprise.inject.build.compatible.spi.MetaAnnotations;
-import jakarta.enterprise.inject.build.compatible.spi.Registration;
-import jakarta.enterprise.inject.build.compatible.spi.ScannedClasses;
-import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
-import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
-import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.build.compatible.spi.*;
 import jakarta.enterprise.lang.model.AnnotationInfo;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import org.jboss.jandex.AnnotationInstance;
@@ -24,6 +16,7 @@ import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -44,7 +37,7 @@ public class MicroAICDIBuildCompatibleExtension implements BuildCompatibleExtens
     @SuppressWarnings("unused")
     @Discovery
     public void discoverRegisterAIServiceAnnotatedServices(ScannedClasses scannedClasses, Messages messages, MetaAnnotations metaAnnotations) throws IOException {
-        LOGGER.info("Core ext");
+        LOGGER.info("discoverRegisterAIServiceAnnotatedServices using Jandex");
         Enumeration<URL> resources = this.getClass().getClassLoader().getResources("META-INF/jandex.idx");
         while (resources.hasMoreElements()) {
             try (InputStream input = resources.nextElement().openStream()) {
@@ -53,11 +46,10 @@ public class MicroAICDIBuildCompatibleExtension implements BuildCompatibleExtens
 
                 DotName registerAiServiceDotName = DotName.createSimple(RegisterAIService.class);
                 List<AnnotationInstance> annotations = index.getAnnotations(registerAiServiceDotName);
-
                 for (AnnotationInstance annotation : annotations) {
                     if (Objects.requireNonNull(annotation.target().kind()) == AnnotationTarget.Kind.CLASS) {
                         String detectedClass = annotation.target().toString();
-                        messages.info("Detect new AIService " + detectedClass);
+                        LOGGER.info("Detect new AIService from Jandex " + detectedClass);
                         scannedClasses.add(detectedClass);
                     }
                 }
@@ -68,11 +60,18 @@ public class MicroAICDIBuildCompatibleExtension implements BuildCompatibleExtens
 
     @SuppressWarnings("unused")
     @Enhancement(types = Object.class, withAnnotations = RegisterAIService.class, withSubtypes = true)
-    public void detectRegisterAIService(ClassInfo classInfo) {
+    public void detectRegisterAIService(ClassConfig classConfig, Messages messages) {
         // ajout opentrace
-        LOGGER.info("Detect new AIService " + classInfo.name());
-        detectedAIServicesDeclaredInterfaces.add(classInfo.name());
+        ClassInfo classInfo = classConfig.info();
+        LOGGER.info("Detect new AIService from Ehancement " + classInfo.name());
+        if (classInfo.isInterface()) {
+            detectedAIServicesDeclaredInterfaces.add(classInfo.name());
+            // detect if there is a normal scope on the interface
+        } else {
+            messages.warn("The class is Annotated with @RegisterAIService, but only interface are allowed", classConfig.info());
+        }
     }
+
 
     @SuppressWarnings("unused")
     @Registration(types = Object.class)
