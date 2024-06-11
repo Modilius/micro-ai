@@ -6,15 +6,9 @@ import dev.langchain4j.service.V;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
-import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.time.temporal.ChronoUnit;
 
-
-@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
-@RegisterAIService(
-        chatMemoryMaxMessages = 5
-)
 public interface FraudAiService {
 
         @SystemMessage("""
