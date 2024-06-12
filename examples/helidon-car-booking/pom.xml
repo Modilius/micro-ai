@@ -20,6 +20,13 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.modilius.microai</groupId>
+            <artifactId>micro-ai-cdi-buildcompatible-extension-azure-openai-plugin</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- Adds all features available in MicroProfile -->
         <dependency>
             <groupId>io.helidon.microprofile.bundles</groupId>

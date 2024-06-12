@@ -1,7 +1,6 @@
-package io.jefrajames.booking;
+package org.modilius.microai.cdi.extension.plugins.azure.openapi;
 
 import dev.langchain4j.model.azure.AzureOpenAiChatModel;
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
@@ -10,7 +9,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import java.time.Duration;
 
 @ApplicationScoped
-public class ModelFactory {
+public class AzureOpenAiChatModelProducer {
 
     @Inject
     @ConfigProperty(name = "azure.openai.endpoint")
@@ -49,20 +48,8 @@ public class ModelFactory {
     private Boolean AZURE_OPENAI_LOG_REQUESTS_AND_RESPONSES;
 
     @Produces
-    private AzureOpenAiChatModel model;
-
-    @PostConstruct
-    private void initModel() {
-
-        // OpenAIServiceVersion (SDK 1.0.0-beta.7):
-        // V2022_12_01("2022-12-01"): 404 Not Found
-        // V2023_05_15("2023-05-15"): HTTP 200, function call not supported
-        // V2023_06_01_PREVIEW("2023-06-01-preview"): same as V2023_05_15
-        // V2023_07_01_PREVIEW("2023-07-01-preview"): same as V2023_05_15
-        // V2024_02_15_PREVIEW("2024-02-15-preview"):OK
-        // Reminder: 2023-12-01-preview OK with Quarkus
-
-        model = AzureOpenAiChatModel.builder()
+    public AzureOpenAiChatModel initModel() {
+        return AzureOpenAiChatModel.builder()
                 .apiKey(AZURE_OPENAI_KEY)
                 .endpoint(AZURE_OPENAI_ENDPOINT)
                 .serviceVersion(AZURE_OPENAI_SERVICE_VERSION)
@@ -74,5 +61,4 @@ public class ModelFactory {
                 .logRequestsAndResponses(AZURE_OPENAI_LOG_REQUESTS_AND_RESPONSES)
                 .build();
     }
-
 }
