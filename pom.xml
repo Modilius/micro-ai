@@ -9,7 +9,6 @@
     <url>https://github.com/Modilius/micro-ai</url>
     <modules>
         <module>examples</module>
-        <module>extensions</module>
     </modules>
 
     <properties>
