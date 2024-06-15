@@ -26,6 +26,11 @@
             <artifactId>micro-ai-cdi-buildcompatible-extension-azure-openai-plugin</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.modilius.microai</groupId>
+            <artifactId>micro-ai-cdi-buildcompatible-extension-core</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
         <!-- Adds all features available in MicroProfile -->
         <dependency>
