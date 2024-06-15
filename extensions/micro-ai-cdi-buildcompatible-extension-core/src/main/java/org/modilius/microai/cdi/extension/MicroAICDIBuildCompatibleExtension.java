@@ -1,10 +1,14 @@
 package org.modilius.microai.cdi.extension;
 
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.enterprise.inject.build.compatible.spi.BuildCompatibleExtension;
 import jakarta.enterprise.inject.build.compatible.spi.ClassConfig;
 import jakarta.enterprise.inject.build.compatible.spi.Discovery;
 import jakarta.enterprise.inject.build.compatible.spi.Enhancement;
 import jakarta.enterprise.inject.build.compatible.spi.ScannedClasses;
+import jakarta.enterprise.inject.build.compatible.spi.Synthesis;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticBeanBuilder;
+import jakarta.enterprise.inject.build.compatible.spi.SyntheticComponents;
 import jakarta.enterprise.lang.model.declarations.ClassInfo;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
@@ -65,4 +69,19 @@ public class MicroAICDIBuildCompatibleExtension implements BuildCompatibleExtens
         }
     }
 
+    public static final String PARAM_INTERFACE_CLASS = "interfaceClass";
+    @SuppressWarnings({"unchecked","unused"})
+    @Synthesis
+    public void synthesis(SyntheticComponents syntheticComponents) throws ClassNotFoundException {
+        LOGGER.info("Synthesis");
+        for (String interfaceName : detectedAIServicesDeclaredInterfaces) {
+            LOGGER.info("Create synthetic " + interfaceName);
+            Class<?> interfaceClass = Class.forName(interfaceName);
+            SyntheticBeanBuilder<Object> builder = (SyntheticBeanBuilder<Object>) syntheticComponents.addBean(interfaceClass);
+            builder.createWith(AIServiceCreator.class)
+                    .type(interfaceClass)
+                    .scope(RequestScoped.class)
+                    .withParam(PARAM_INTERFACE_CLASS, interfaceClass);
+        }
+    }
 }
