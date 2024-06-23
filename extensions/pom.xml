@@ -13,6 +13,7 @@
   <modules>
     <module>micro-ai-cdi-buildcompatible-extension-core</module>
     <module>micro-ai-cdi-buildcompatible-extension-azure-openai-plugin</module>
+    <module>micro-ai-cdi-portable-extension-core</module>
   </modules>
 
   <properties>
