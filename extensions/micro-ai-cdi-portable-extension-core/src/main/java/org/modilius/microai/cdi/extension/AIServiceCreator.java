@@ -7,6 +7,7 @@ import dev.langchain4j.service.AiServices;
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.spi.CDI;
+import org.jboss.logging.Logger;
 import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AIServiceCreator {
+    private static final Logger LOGGER = Logger.getLogger(AIServiceCreator.class);
 
     public static Object create(CreationalContext<?> creationalContext, RegisterAIService annotation, Class<?> interfaceClass) {
         try {
@@ -32,6 +34,7 @@ public class AIServiceCreator {
                 aiServices.contentRetriever(contentRetrievers.get());
             return aiServices.build();
         } catch (Exception e) {
+            LOGGER.error("Error creating AI service", e);
             throw new RuntimeException(e);
         }
     }
