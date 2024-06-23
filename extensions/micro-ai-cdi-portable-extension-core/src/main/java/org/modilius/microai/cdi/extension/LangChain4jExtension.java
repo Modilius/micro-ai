@@ -1,7 +1,6 @@
 package org.modilius.microai.cdi.extension;
 
 import jakarta.enterprise.event.Observes;
-import jakarta.enterprise.inject.spi.BeforeBeanDiscovery;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.enterprise.inject.spi.ProcessAnnotatedType;
 import jakarta.enterprise.inject.spi.WithAnnotations;
@@ -19,14 +18,16 @@ public class LangChain4jExtension implements Extension {
         return detectedAIServicesDeclaredInterfaces;
     }
 
-
-    public void makeRegisterAIasStereotype(@Observes BeforeBeanDiscovery bbd) {
-        LOGGER.info("makeRegisterAIasStereotype");
-        bbd.addStereotype(RegisterAIService.class);
-    }
-
-
     <T> void processAnnotatedType(@Observes @WithAnnotations({RegisterAIService.class}) ProcessAnnotatedType<T> pat) {
-        LOGGER.info("processAnnotatedType "+pat.getAnnotatedType().getJavaClass().getName());
+        if ( pat.getAnnotatedType().getJavaClass().isInterface()) {
+            LOGGER.info("processAnnotatedType register "+pat.getAnnotatedType().getJavaClass().getName());
+            detectedAIServicesDeclaredInterfaces.add(pat.getAnnotatedType().getJavaClass().getName());
+        } else {
+            LOGGER.warn("processAnnotatedType reject "+pat.getAnnotatedType().getJavaClass().getName()+" wich is not an interface");
+            pat.veto();
+        }
     }
+
+
+
 }
