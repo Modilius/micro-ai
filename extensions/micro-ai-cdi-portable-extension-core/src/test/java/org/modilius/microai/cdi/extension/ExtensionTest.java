@@ -46,12 +46,12 @@ public class ExtensionTest {
         Assertions.assertTrue(
                 LangChain4jExtension
                         .getDetectedAIServicesDeclaredInterfaces()
-                        .contains(MyDummyAIService.class.getName())
+                        .contains(MyDummyAIService.class)
         );
         Assertions.assertTrue(
                 LangChain4jExtension
                         .getDetectedAIServicesDeclaredInterfaces()
-                        .contains(MyDummyAIService2.class.getName())
+                        .contains(MyDummyAIService2.class)
         );
     }
 
