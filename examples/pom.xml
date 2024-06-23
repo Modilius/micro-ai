@@ -12,5 +12,6 @@
 
     <modules>
         <module>helidon-car-booking</module>
+        <module>demo-quarkus</module>
     </modules>
 </project>
