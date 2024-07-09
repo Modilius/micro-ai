@@ -1,0 +1,18 @@
+Hello, for all that came to our live coding, this is the fix branch and the explanations of the concerns.
+
+
+In fact, when I did my tests with Quarkus I let some code inside that was doing injections of services and chatmodule.
+
+When we did the demo, I removed everything, but... In building phase Quarkus is removing all beans that are detected as not injected.
+And the beans we used using programmatic lookup were not detected (even the chatModule producer).
+
+To prevent that, we should annotate with @Unremovable, wich is not possible because we want to keep code compatbile with other CDI implementations, or the bean should be @Named or have an @Observer.
+
+To do that proprely I rewrite the two extensions and invite you to check the code, using @Priority I can detect @RregisterAIService annotations and collect the "tools" used,
+then I can ehance the "tools" with an @Named if necessary.
+
+I also rewrite the AzureOpenAIChatModuleExtension to provide it in synthetic form.
+
+Please feel free to contact me for any questions regarding that (yann.blazart@sciam.fr)
+
+Regards.
