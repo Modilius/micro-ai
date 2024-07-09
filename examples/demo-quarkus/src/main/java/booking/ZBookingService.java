@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 @Log
 @Named
-public class BookingService {
+public class ZBookingService {
 
     // Pseudo database
     private static final Map<String, Booking> BOOKINGS = new HashMap<>();

@@ -6,7 +6,9 @@ import dev.langchain4j.service.V;
 import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
-@RegisterAIService
+@RegisterAIService(
+        tools = MyTool.class
+)
 public interface MyDummyAIService {
     @SystemMessage("toto")
     @UserMessage("titi")

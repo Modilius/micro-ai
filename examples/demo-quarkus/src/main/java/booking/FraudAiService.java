@@ -10,6 +10,7 @@ import org.modilius.microai.cdi.extension.spi.RegisterAIService;
 
 import java.time.temporal.ChronoUnit;
 
+@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @RegisterAIService(
         tools = BookingService.class,
         chatMemoryMaxMessages = 5
